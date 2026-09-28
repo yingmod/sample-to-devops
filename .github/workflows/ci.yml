@@ -1,0 +1,33 @@
+name: Java Spring Boot CI
+# 1. Khi nào thì kích hoạt con bot này?
+# Hễ có ai "push" hoặc tạo "pull request" vào nhánh main thì chạy
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+# 2. Các công việc con bot cần làm
+jobs:
+  build-and-test:
+    # Mượn một máy ảo Ubuntu Linux mới toanh của GitHub
+    runs-on: ubuntu-latest
+    steps:
+      # Bước A: Tải code từ GitHub về máy ảo
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # Bước B: Tự động cài đặt Java 21 (Temurin) lên máy ảo
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven # Bật tính năng cache để các lần build sau tải thư viện siêu nhanh
+      # Bước C: Cấp quyền chạy cho file mvnw
+      - name: Grant execute permission for mvnw
+        run: chmod +x mvnw
+      # Bước D: Chạy toàn bộ Unit Test và đóng gói
+      - name: Build with Maven
+        run: ./mvnw clean package -DskipTests
+      # Bước E: Thử đóng gói Docker Image xem Dockerfile có bị lỗi cú pháp không
+      - name: Build Docker Image
+        run: docker build -t devops-app:${{ github.sha }} .
