@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # 1. DỊCH VỤ DATABASE
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: devops_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432" # Để bạn có thể dùng DBeaver hoặc DataGrip từ máy Mac kết nối vào
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Giữ dữ liệu sống mãi
+
+  # 2. DỊCH VỤ SPRING BOOT CỦA BẠN
+  app:
+    build: . # Tự động tìm Dockerfile ở thư mục này để build
+    container_name: my-spring-app
+    ports:
+      - "8080:8080"
+    environment:
+      # Chú ý: Hostname là 'postgres-db' (tên của service ở trên), KHÔNG PHẢI localhost!
+      DB_URL: jdbc:postgresql://postgres-db:5432/devops_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: secret
+    depends_on:
+      - postgres-db # Ra lệnh cho Docker: Bật Database xong mới được bật App!
+
+# Khai báo Volume để lưu trữ dữ liệu bền vững
+volumes:
+  postgres_data:

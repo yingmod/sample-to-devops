@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: sample-to-devops
+
+  datasource:
+    # Nếu có biến môi trường DB_URL thì lấy, nếu không thì mặc định localhost
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/devops_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:secret}
+
+  jpa:
+    hibernate:
+      # Tự động tạo bảng dựa trên Java Entity
+      ddl-auto: update
+    show-sql: true
