@@ -10,7 +10,6 @@ public class HelloController {
     // API kiểm tra trang chủ
     @GetMapping("/")
     public Map<String, Object> hello() {
-        int numer = "Day la chuoi chu khong phai so";
         return Map.of(
             "message", "Hello DevOps! Ứng dụng Spring Boot đang chạy thành công.",
             "status", "UP"
